@@ -12,6 +12,15 @@ $app = new \Slim\App([
     ]
 ]);
 
+$app->get('[/]', function ($request, $response, $args) {
+    $file = '../Frontend/index.html';
+    if (file_exists($file)) {
+        return $response->write(file_get_contents($file));
+    } else {
+        throw new \Slim\Exception\NotFoundException($request, $response);
+    }
+});
+
 $app->post('/empleados/login[/]', \EmpleadoAPI::class . ':LoginEmpleado');  
 $app->post('/empleados/registrarEmpleado[/]', \EmpleadoAPI::class . ':RegistrarEmpleado')
 ->add(\EmpleadoMiddleware::class . ':ValidarSocio')
