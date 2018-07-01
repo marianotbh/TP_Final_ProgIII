@@ -13,7 +13,7 @@ $app = new \Slim\App([
 ]);
 
 $app->get('[/]', function ($request, $response, $args) {
-    $file = '../Frontend/index.html';
+    $file = './Frontend/index.html';
     if (file_exists($file)) {
         return $response->write(file_get_contents($file));
     } else {
