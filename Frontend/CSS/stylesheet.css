@@ -1,0 +1,31 @@
+.main{
+    
+    height: 100vh;
+}
+
+body{
+    background-color: rgba(255,175,75,1);
+}
+
+table{
+    border: 2px solid grey;
+    border-radius: 5px;
+    background-color: #f2f2f2;
+}
+
+.formulario{
+    border: 2px solid grey;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+    margin-left: 20px;
+    background-color: #f2f2f2;
+}
+
+.marginRow{
+    margin: 5px;
+}
+
+.trSeleccionable{
+    cursor: pointer;
+}
