@@ -13,16 +13,20 @@ class Token{
         "iat" => "", //Cuándo fue metido
         "nbf" => "", //Antes de esto no va a funcionar (Desde)
         //"exp" => "", //Hasta cuando va a funcionar
-        "user" => "",
-        "tipoUser" => ""
+        "usuario" => "",
+        "tipo" => "",
+        "id" => "",
+        "nombre" => ""
     );
 
-    public static function CodificarToken($usuario,$tipo){        
+    public static function CodificarToken($usuario,$tipo,$id,$nombre_empleado){        
         $fecha = new Datetime("now", new DateTimeZone('America/Buenos_Aires'));
         Token::$token["iat"] = $fecha->getTimestamp();                
         Token::$token["nbf"] = $fecha->getTimestamp();
         Token::$token["usuario"] = $usuario; 
         Token::$token["tipo"] = $tipo; 
+        Token::$token["id"] = $id;
+        Token::$token["nombre"] = $nombre_empleado;
         $jwt = JWT::encode(Token::$token, Token::$key);
 
         return $jwt;
