@@ -9,6 +9,7 @@ class Empleado
     public $fechaRegistro;
     public $ultimoLogin;
     public $estado;
+    public $cantidad_operaciones;
 
     ///Registra un nuevo empleado
     public static function Registrar($usuario, $clave, $nombre, $tipo)
@@ -168,7 +169,8 @@ class Empleado
         $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
 
         $consulta = $objetoAccesoDato->RetornarConsulta("SELECT em.ID_empleado as id, te.Descripcion as tipo, em.nombre_empleado as nombre, 
-                                                        em.usuario, em.fecha_registro as fechaRegistro, em.fecha_ultimo_login as ultimoLogin, em.estado 
+                                                        em.usuario, em.fecha_registro as fechaRegistro, em.fecha_ultimo_login as ultimoLogin, em.estado,
+                                                        em.cantidad_operaciones 
                                                         FROM empleado em INNER JOIN tipoempleado te on em.id_tipo_empleado = te.id_tipo_empleado");
         
         $consulta->execute();

@@ -6,6 +6,7 @@ require './vendor/autoload.php';
 include_once './API/EmpleadoAPI.php';
 include_once './API/MesaAPI.php';
 include_once './API/MenuAPI.php';
+include_once './API/PedidoAPI.php';
 include_once './Middleware/EmpleadoMiddleware.php';
 
 $app = new \Slim\App([
@@ -58,6 +59,29 @@ $app->get('/menu/listar[/]', \MenuAPI::class . ':ListarMenu')
 $app->delete('/menu/{id}[/]', \MenuAPI::class . ':BajaMenu')
 ->add(\EmpleadoMiddleware::class . ':ValidarSocio')
 ->add(\EmpleadoMiddleware::class . ':ValidarToken'); 
+
+//Pedido
+$app->post('/pedido/registrar[/]', \PedidoAPI::class . ':RegistrarPedido')
+->add(\EmpleadoMiddleware::class . ':ValidarMozo')
+->add(\EmpleadoMiddleware::class . ':ValidarToken'); 
+$app->delete('/pedido/{codigo}[/]', \PedidoAPI::class . ':CancelarPedido')
+->add(\EmpleadoMiddleware::class . ':ValidarMozo')
+->add(\EmpleadoMiddleware::class . ':ValidarToken'); 
+$app->get('/pedido/listarTodos[/]', \PedidoAPI::class . ':ListarTodosLosPedidos')
+->add(\EmpleadoMiddleware::class . ':ValidarSocio')
+->add(\EmpleadoMiddleware::class . ':ValidarToken');
+$app->get('/pedido/listarCancelados[/]', \PedidoAPI::class . ':ListarTodosLosPedidosCancelados')
+->add(\EmpleadoMiddleware::class . ':ValidarSocio')
+->add(\EmpleadoMiddleware::class . ':ValidarToken');  
+$app->post('/pedido/listarTodosPorFecha[/]', \PedidoAPI::class . ':ListarTodosLosPedidosPorFecha')
+->add(\EmpleadoMiddleware::class . ':ValidarSocio')
+->add(\EmpleadoMiddleware::class . ':ValidarToken');  
+$app->get('/pedido/listarPorMesa/{codigoMesa}[/]', \PedidoAPI::class . ':ListarTodosLosPedidosPorMesa');
+$app->get('/pedido/listarActivos[/]', \PedidoAPI::class . ':ListarPedidosActivos')
+->add(\EmpleadoMiddleware::class . ':ValidarToken');  
+
+
+
 
 
 $app->run();
