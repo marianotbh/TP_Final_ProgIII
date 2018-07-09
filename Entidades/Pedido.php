@@ -412,6 +412,29 @@ class Pedido
         }
     }
 
+    ///Finaliza los pedidos de la mesa
+    public static function Finalizar($codigoMesa)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE pedido SET id_estado_pedidos = 6 
+                                                            WHERE id_estado_pedidos <> 5 AND id_mesa = :codigo");
+
+            $consulta->bindValue(':codigo', $codigoMesa, PDO::PARAM_STR);
+
+            $consulta->execute();
+
+            $respuesta = array("Estado" => "OK", "Mensaje" => "Pedidos de la mesa finalizados correctamente.");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
     //MasVendido
 
     //MenosVendido

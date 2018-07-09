@@ -205,19 +205,24 @@ class Mesa
         }
     }
 
-    ///Calcula el importe final y genera la factura.
+    ///Calcula el importe final y genera la factura. Finaliza todos los pedidos de la mesa. 
     public static function Cobrar($codigoMesa)
     {
         try {
             $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
 
-            $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE mesa SET estado = 'Cerrada' WHERE codigo_mesa = :codigo");
+            $pedidos = Pedido::ListarPorMesa($codigoMesa);
+            $importeFinal = 0;
+            foreach($pedidos as $pedido){
+                if($pedido->estado == "Entregado"){
+                    $importeFinal += $pedido->importe;
+                }
+            }
 
-            $consulta->bindValue(':codigo', $codigoMesa, PDO::PARAM_STR);
+            Factura::Generar($importeFinal,$codigoMesa);
+            Pedido::Finalizar($codigoMesa);
 
-            $consulta->execute();
-
-            $resultado = array("Estado" => "OK", "Mensaje" => "Cambio de estado exitoso.");
+            $resultado = array("Estado" => "OK", "Mensaje" => "Se ha cobrado a la mesa con exito.");
         } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");

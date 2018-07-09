@@ -65,6 +65,10 @@ $app->get('/mesas/estadoPagando/{codigo}[/]', \MesaAPI::class . ':CambiarEstado_
 $app->get('/mesas/estadoCerrada/{codigo}[/]', \MesaAPI::class . ':CambiarEstado_Cerrada')
 ->add(\EmpleadoMiddleware::class . ':ValidarSocio')
 ->add(\EmpleadoMiddleware::class . ':ValidarToken'); 
+$app->get('/mesas/cobrar/{codigo}[/]', \MesaAPI::class . ':CobrarMesa')
+->add(\EmpleadoMiddleware::class . ':ValidarSocio')
+->add(\EmpleadoMiddleware::class . ':ValidarToken'); 
+
 //Menu
 $app->post('/menu/registrar[/]', \MenuAPI::class . ':RegistrarComida')
 ->add(\EmpleadoMiddleware::class . ':ValidarSocio')
@@ -104,6 +108,10 @@ $app->post('/pedido/tomarPedido[/]', \PedidoAPI::class . ':TomarPedidoPendiente'
 $app->post('/pedido/listoParaServir[/]', \PedidoAPI::class . ':InformarPedidoListoParaServir')
 ->add(\PedidoMiddleware::class . ':ValidarInformarListoParaServir')
 ->add(\EmpleadoMiddleware::class . ':ValidarToken');  
+$app->post('/pedido/servir[/]', \PedidoAPI::class . ':ServirPedido')
+->add(\PedidoMiddleware::class . ':ValidarServir')
+->add(\EmpleadoMiddleware::class . ':ValidarMozo')
+->add(\EmpleadoMiddleware::class . ':ValidarToken'); 
 $app->get('/pedido/tiempoRestante/{codigoPedido}[/]', \PedidoAPI::class . ':TiempoRestantePedido');
 
 

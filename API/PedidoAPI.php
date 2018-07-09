@@ -93,4 +93,13 @@ class PedidoApi extends Pedido{
         $newResponse = $response->withJson($respuesta,200);
         return $newResponse;
     }
+
+    ///Servir Pedido
+    public function ServirPedido($request,$response,$args){
+        $parametros = $request->getParsedBody();
+        $codigo = $parametros["codigo"];  
+        $respuesta = Pedido::Servir($codigo);
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
 }

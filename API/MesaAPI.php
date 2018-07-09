@@ -85,5 +85,13 @@ class MesaApi extends Mesa{
         return $newResponse;
     }
 
+    ///Calcula el importe final y genera la factura. Finaliza todos los pedidos de la mesa. 
+    public function CobrarMesa($request,$response,$args){
+        $codigo = $args["codigo"];
+        $respuesta = Mesa::Cobrar($codigo);
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
+
 
 }
