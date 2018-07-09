@@ -8,6 +8,7 @@ include_once './API/MesaAPI.php';
 include_once './API/MenuAPI.php';
 include_once './API/PedidoAPI.php';
 include_once './Middleware/EmpleadoMiddleware.php';
+include_once './Middleware/PedidoMiddleware.php';
 
 $app = new \Slim\App([
     'settings' => [
@@ -93,7 +94,13 @@ $app->post('/pedido/listarTodosPorFecha[/]', \PedidoAPI::class . ':ListarTodosLo
 $app->get('/pedido/listarPorMesa/{codigoMesa}[/]', \PedidoAPI::class . ':ListarTodosLosPedidosPorMesa');
 $app->get('/pedido/listarActivos[/]', \PedidoAPI::class . ':ListarPedidosActivos')
 ->add(\EmpleadoMiddleware::class . ':ValidarToken');  
-
+$app->post('/pedido/tomarPedido[/]', \PedidoAPI::class . ':TomarPedidoPendiente')
+->add(\PedidoMiddleware::class . ':ValidarTomarPedido')
+->add(\EmpleadoMiddleware::class . ':ValidarToken');  
+$app->post('/pedido/listoParaServir[/]', \PedidoAPI::class . ':InformarPedidoListoParaServir')
+->add(\PedidoMiddleware::class . ':ValidarInformarListoParaServir')
+->add(\EmpleadoMiddleware::class . ':ValidarToken');  
+$app->get('/pedido/tiempoRestante/{codigoPedido}[/]', \PedidoAPI::class . ':TiempoRestantePedido');
 
 
 

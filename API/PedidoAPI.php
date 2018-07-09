@@ -64,4 +64,33 @@ class PedidoApi extends Pedido{
         $newResponse = $response->withJson($respuesta,200);
         return $newResponse;
     }
+
+    //Uno de los empleados toma el pedido para prepararlo, agregando un tiempo estimado de preparación.
+    public function TomarPedidoPendiente($request,$response,$args){
+        $parametros = $request->getParsedBody();
+        $codigo = $parametros["codigo"];  
+        $minutosEstimados = $parametros["minutosEstimados"];  
+        $payload = $request->getAttribute("payload")["Payload"];
+        $id_encargado = $payload->id;
+        $respuesta = Pedido::TomarPedido($codigo,$id_encargado,$minutosEstimados);
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
+
+    ///Se informa que el pedido está listo para servir.
+    public function InformarPedidoListoParaServir($request,$response,$args){
+        $parametros = $request->getParsedBody();
+        $codigo = $parametros["codigo"];  
+        $respuesta = Pedido::InformarListoParaServir($codigo);
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
+
+    ///Devuelve el tiempo restante
+    public function TiempoRestantePedido($request,$response,$args){
+        $codigo = $args["codigoPedido"];
+        $respuesta = Pedido::TiempoRestante($codigo);
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
 }
