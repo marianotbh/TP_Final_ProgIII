@@ -42,8 +42,7 @@ class MesaApi extends Mesa{
             $rutaFoto = "./Fotos/Mesas/".$codigoMesa.".".$ext;
             Foto::GuardarFoto($foto,$rutaFoto);
 
-            Mesa::ActualizarFoto($rutaFoto,$codigoMesa);
-            $respuesta = array("Estado" => "OK", "Mensaje" => "Foto actualizada correctamente.");
+            $respuesta = Mesa::ActualizarFoto($rutaFoto,$codigoMesa);
             $newResponse = $response->withJson($respuesta,200);
             return $newResponse;
         }

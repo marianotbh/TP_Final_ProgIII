@@ -21,12 +21,12 @@ class Empleado
             $fecha = date('Y-m-d H:i:s');
 
             $consulta = $objetoAccesoDato->RetornarConsulta("SELECT ID_tipo_empleado FROM tipoempleado WHERE Descripcion = :tipo AND Estado = 'A';");
-            
+
             $consulta->bindValue(':tipo', $tipo, PDO::PARAM_STR);
             $consulta->execute();
             $id_tipo = $consulta->fetch();
-            
-            if($id_tipo != null){
+
+            if ($id_tipo != null) {
                 $consulta = $objetoAccesoDato->RetornarConsulta("INSERT INTO empleado (ID_tipo_empleado, nombre_empleado, usuario, 
                 clave, fecha_registro, estado) 
                 VALUES (:id_tipo, :nombre, :usuario, :clave, :fecha, 'A');");
@@ -40,10 +40,9 @@ class Empleado
                 $consulta->execute();
 
                 $respuesta = array("Estado" => "OK", "Mensaje" => "Empleado registrado correctamente.");
-            }
-            else{
+            } else {
                 $respuesta = array("Estado" => "ERROR", "Mensaje" => "Debe ingresar un tipo de empleado valido");
-            }                        
+            }
         } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
@@ -69,12 +68,13 @@ class Empleado
     }
 
     ///Actualiza la ultima fecha de logueo de los empleados.
-    public static function ActualizarFechaLogin($id_empleado){
+    public static function ActualizarFechaLogin($id_empleado)
+    {
         $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
 
         date_default_timezone_set("America/Argentina/Buenos_Aires");
         $fecha = date('Y-m-d H:i:s');
-        
+
         $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE empleado SET fecha_ultimo_login = :fecha WHERE ID_Empleado = :id");
 
         $consulta->bindValue(':fecha', $fecha, PDO::PARAM_STR);
@@ -84,61 +84,62 @@ class Empleado
     }
 
     ///Baja de empleados.
-    public static function Baja($id_empleado){
-        try{
+    public static function Baja($id_empleado)
+    {
+        try {
             $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
-        
+
             $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE empleado SET estado = 'B' WHERE ID_Empleado = :id");
-    
+
             $consulta->bindValue(':id', $id_empleado, PDO::PARAM_INT);
-    
+
             $consulta->execute();
 
             $respuesta = array("Estado" => "OK", "Mensaje" => "Empleado dado de baja correctamente.");
-        } 
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
         }
-        finally{        
+        finally {
             return $respuesta;
         }
     }
 
     ///Suspender empleados.
-    public static function Suspender($id_empleado){
-        try{
+    public static function Suspender($id_empleado)
+    {
+        try {
             $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
-        
+
             $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE empleado SET estado = 'S' WHERE ID_Empleado = :id");
-    
+
             $consulta->bindValue(':id', $id_empleado, PDO::PARAM_INT);
-    
+
             $consulta->execute();
 
             $respuesta = array("Estado" => "OK", "Mensaje" => "Empleado suspendido correctamente.");
-        } 
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
         }
-        finally{        
+        finally {
             return $respuesta;
         }
     }
 
     ///Modificación de empleados
-    public static function Modificar($id_empleado, $usuario, $nombre, $tipo){
-        try{
+    public static function Modificar($id_empleado, $usuario, $nombre, $tipo)
+    {
+        try {
             $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
 
             $consulta = $objetoAccesoDato->RetornarConsulta("SELECT ID_tipo_empleado FROM tipoempleado WHERE Descripcion = :tipo AND Estado = 'A';");
-            
+
             $consulta->bindValue(':tipo', $tipo, PDO::PARAM_STR);
             $consulta->execute();
             $id_tipo = $consulta->fetch();
-            
-            if($id_tipo != null){
+
+            if ($id_tipo != null) {
                 $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE empleado set ID_tipo_empleado = :id_tipo, nombre_empleado = :nombre, usuario = :usuario
                                                                 WHERE id_empleado = :id_empleado");
 
@@ -150,38 +151,45 @@ class Empleado
                 $consulta->execute();
 
                 $respuesta = array("Estado" => "OK", "Mensaje" => "Empleado modificado correctamente.");
-            }
-            else{
+            } else {
                 $respuesta = array("Estado" => "ERROR", "Mensaje" => "Debe ingresar un tipo de empleado valido");
-            } 
-        } 
-        catch (Exception $e) {
+            }
+        } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
         }
-        finally{        
+        finally {
             return $respuesta;
         }
     }
 
     ///Listado completo de empleados
-    public static function Listar(){
-        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+    public static function Listar()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
 
-        $consulta = $objetoAccesoDato->RetornarConsulta("SELECT em.ID_empleado as id, te.Descripcion as tipo, em.nombre_empleado as nombre, 
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT em.ID_empleado as id, te.Descripcion as tipo, em.nombre_empleado as nombre, 
                                                         em.usuario, em.fecha_registro as fechaRegistro, em.fecha_ultimo_login as ultimoLogin, em.estado,
                                                         em.cantidad_operaciones 
                                                         FROM empleado em INNER JOIN tipoempleado te on em.id_tipo_empleado = te.id_tipo_empleado");
-        
-        $consulta->execute();
-        
-        $resultado = $consulta->fetchAll(PDO::FETCH_CLASS,"Empleado");
-        return $resultado; 
+
+            $consulta->execute();
+
+            $respuesta = $consulta->fetchAll(PDO::FETCH_CLASS, "Empleado");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
     }
 
     ///Cambiar clave de empleado.
-    public static function CambiarClave($id_empleado, $nuevaClave){
-        try{
+    public static function CambiarClave($id_empleado, $nuevaClave)
+    {
+        try {
             $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
             $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE empleado SET clave = :clave WHERE id_empleado = :id_empleado");
 
@@ -191,12 +199,11 @@ class Empleado
             $consulta->execute();
 
             $respuesta = array("Estado" => "OK", "Mensaje" => "Clave modificada correctamente.");
-        } 
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
         }
-        finally{        
+        finally {
             return $respuesta;
         }
     }

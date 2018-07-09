@@ -19,32 +19,32 @@ class Pedido
     public $importe;
 
     ///Registra un nuevo pedido
-    public static function Registrar($id_mesa, $id_menu, $id_mozo,$nombre_cliente)
+    public static function Registrar($id_mesa, $id_menu, $id_mozo, $nombre_cliente)
     {
         $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
-        try {          
+        try {
             $consulta = $objetoAccesoDato->RetornarConsulta("SELECT Count(*) FROM menu m, mesa me, empleado em
                                                             INNER JOIN tipoempleado te ON em.ID_tipo_empleado = te.id_tipo_empleado 
                                                             WHERE m.id = :id_menu AND em.ID_empleado = :id_mozo
                                                             AND me.codigo_mesa = :id_mesa AND em.estado = 'A' AND te.Descripcion = 'Mozo';");
-            
+
             $consulta->bindValue(':id_menu', $id_menu, PDO::PARAM_INT);
             $consulta->bindValue(':id_mozo', $id_mozo, PDO::PARAM_INT);
             $consulta->bindValue(':id_mesa', $id_mesa, PDO::PARAM_STR);
             $consulta->execute();
             $validacion = $consulta->fetch();
-                      
-            if($validacion[0] > 0){
+
+            if ($validacion[0] > 0) {
                 $codigo = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 5)), 0, 5);
-                
+
                 date_default_timezone_set("America/Argentina/Buenos_Aires");
                 $fecha = date('Y-m-d');
                 $hora_inicial = date('H:i');
-                
+
                 $consulta = $objetoAccesoDato->RetornarConsulta("INSERT INTO pedido (codigo, id_estado_pedidos, fecha, hora_inicial, 
                                                                 id_mesa, id_menu, id_mozo, nombre_cliente) 
                                                                 VALUES (:codigo, 1, :fecha, :hora_inicial, 
-                                                                :id_mesa, :id_menu, :id_mozo, :nombre_cliente);");                
+                                                                :id_mesa, :id_menu, :id_mozo, :nombre_cliente);");
 
                 $consulta->bindValue(':id_menu', $id_menu, PDO::PARAM_INT);
                 $consulta->bindValue(':id_mozo', $id_mozo, PDO::PARAM_INT);
@@ -56,10 +56,9 @@ class Pedido
                 $consulta->execute();
 
                 $respuesta = array("Estado" => "OK", "Mensaje" => "Pedido registrado correctamente.");
-            }
-            else{
+            } else {
                 $respuesta = array("Estado" => "ERROR", "Mensaje" => "Alguno de los ID ingresados es inválido.");
-            }                        
+            }
         } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
@@ -70,32 +69,34 @@ class Pedido
     }
 
     ///Cancelar pedido.
-    public static function Cancelar($codigo){
-        try{
+    public static function Cancelar($codigo)
+    {
+        try {
             $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
-        
+
             $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE pedido SET id_estado_pedidos = 5 WHERE codigo = :codigo");
-    
+
             $consulta->bindValue(':codigo', $codigo, PDO::PARAM_STR);
-    
+
             $consulta->execute();
 
             $respuesta = array("Estado" => "OK", "Mensaje" => "Pedido cancelado correctamente.");
-        } 
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
         }
-        finally{        
+        finally {
             return $respuesta;
         }
     }
 
     ///Listado completo de pedidos
-    public static function ListarTodos(){
-        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+    public static function ListarTodos()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
 
-        $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
                                                         me.nombre as descripcion, p.id_menu, te.descripcion as sector, p.nombre_cliente,
                                                         em.nombre_empleado as nombre_mozo, p.id_mozo, p.id_encargado, p.hora_inicial, p.hora_entrega_estimada,
                                                         p.hora_entrega_real, p.fecha, me.precio as importe
@@ -104,18 +105,26 @@ class Pedido
                                                         INNER JOIN menu me ON me.id = p.id_menu
                                                         INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
                                                         INNER JOIN empleado em ON em.ID_empleado = p.id_mozo");
-        
-        $consulta->execute();
-        
-        $resultado = $consulta->fetchAll(PDO::FETCH_CLASS,"Pedido");
-        return $resultado; 
+
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll(PDO::FETCH_CLASS, "Pedido");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
     }
 
     ///Listado completo de pedidos por fecha
-    public static function ListarTodosPorFecha($fecha){
-        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+    public static function ListarTodosPorFecha($fecha)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
 
-        $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
                                                         me.nombre as descripcion, p.id_menu, te.descripcion as sector, p.nombre_cliente,
                                                         em.nombre_empleado as nombre_mozo, p.id_mozo, p.id_encargado, p.hora_inicial, p.hora_entrega_estimada,
                                                         p.hora_entrega_real, p.fecha, me.precio as importe
@@ -125,18 +134,26 @@ class Pedido
                                                         INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
                                                         INNER JOIN empleado em ON em.ID_empleado = p.id_mozo
                                                         WHERE p.fecha = :fecha");
-        $consulta->bindValue(':fecha', $fecha, PDO::PARAM_STR);
-        $consulta->execute();
-        
-        $resultado = $consulta->fetchAll(PDO::FETCH_CLASS,"Pedido");
-        return $resultado; 
+            $consulta->bindValue(':fecha', $fecha, PDO::PARAM_STR);
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll(PDO::FETCH_CLASS, "Pedido");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
     }
 
     ///Listado de pedidos por mesa. No muestra cancelados ni finalizados.  
-    public static function ListarPorMesa($mesa){
-        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+    public static function ListarPorMesa($mesa)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
 
-        $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
                                                         me.nombre as descripcion, p.id_menu, te.descripcion as sector, p.nombre_cliente,
                                                         em.nombre_empleado as nombre_mozo, p.id_mozo, p.id_encargado, p.hora_inicial, p.hora_entrega_estimada,
                                                         p.hora_entrega_real, p.fecha, me.precio as importe
@@ -146,21 +163,29 @@ class Pedido
                                                         INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
                                                         INNER JOIN empleado em ON em.ID_empleado = p.id_mozo
                                                         WHERE p.id_mesa = :mesa AND ep.descripcion NOT IN ('Cancelado','Finalizado')");
-        $consulta->bindValue(':mesa', $mesa, PDO::PARAM_STR);
-        $consulta->execute();
-        
-        $resultado = $consulta->fetchAll(PDO::FETCH_CLASS,"Pedido");
-        return $resultado; 
+            $consulta->bindValue(':mesa', $mesa, PDO::PARAM_STR);
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll(PDO::FETCH_CLASS, "Pedido");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
     }
 
     ///Listado de pedidos por sector. No muestra cancelados ni finalizados.
-    public static function ListarActivosPorSector($sector,$id_empleado){      
-        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+    public static function ListarActivosPorSector($sector, $id_empleado)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
 
-        switch($sector){
+            switch ($sector) {
             //Si es socio los lista a todos.
-            case "Socio":
-                $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
+                case "Socio":
+                    $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
                                                                 me.nombre as descripcion, p.id_menu, te.descripcion as sector, p.nombre_cliente,
                                                                 em.nombre_empleado as nombre_mozo, p.id_mozo, p.id_encargado, p.hora_inicial, p.hora_entrega_estimada,
                                                                 p.hora_entrega_real, p.fecha, me.precio as importe
@@ -170,10 +195,10 @@ class Pedido
                                                                 INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
                                                                 INNER JOIN empleado em ON em.ID_empleado = p.id_mozo
                                                                 WHERE ep.descripcion NOT IN ('Cancelado','Finalizado')");
-                break;
+                    break;
             //Si es mozo lista los de ese mozo.
-            case "Mozo":
-                $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
+                case "Mozo":
+                    $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
                                                             me.nombre as descripcion, p.id_menu, te.descripcion as sector, p.nombre_cliente,
                                                             em.nombre_empleado as nombre_mozo, p.id_mozo, p.id_encargado, p.hora_inicial, p.hora_entrega_estimada,
                                                             p.hora_entrega_real, p.fecha, me.precio as importe
@@ -183,11 +208,11 @@ class Pedido
                                                             INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
                                                             INNER JOIN empleado em ON em.ID_empleado = p.id_mozo
                                                             WHERE p.id_mozo = :id_mozo AND ep.descripcion NOT IN ('Cancelado','Finalizado')");
-                $consulta->bindValue(':id_mozo', $id_empleado, PDO::PARAM_STR);
-                break;
+                    $consulta->bindValue(':id_mozo', $id_empleado, PDO::PARAM_STR);
+                    break;
             //Para los demás lista por sector.
-            default:
-                $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
+                default:
+                    $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
                                                             me.nombre as descripcion, p.id_menu, te.descripcion as sector, p.nombre_cliente,
                                                             em.nombre_empleado as nombre_mozo, p.id_mozo, p.id_encargado, p.hora_inicial, p.hora_entrega_estimada,
                                                             p.hora_entrega_real, p.fecha, me.precio as importe
@@ -197,20 +222,28 @@ class Pedido
                                                             INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
                                                             INNER JOIN empleado em ON em.ID_empleado = p.id_mozo
                                                             WHERE te.descripcion = :sector AND ep.descripcion NOT IN ('Cancelado','Finalizado')");
-                $consulta->bindValue(':sector', $sector, PDO::PARAM_STR);
-                break;
-        }
-        
-        $consulta->execute();
-        
-        $resultado = $consulta->fetchAll(PDO::FETCH_CLASS,"Pedido");
-        return $resultado; 
-    }
-  
-    public static function ListarCancelados(){
-        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+                    $consulta->bindValue(':sector', $sector, PDO::PARAM_STR);
+                    break;
+            }
 
-        $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll(PDO::FETCH_CLASS, "Pedido");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+    public static function ListarCancelados()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
                                                         me.nombre as descripcion, p.id_menu, te.descripcion as sector, p.nombre_cliente,
                                                         em.nombre_empleado as nombre_mozo, p.id_mozo, p.id_encargado, p.hora_inicial, p.hora_entrega_estimada,
                                                         p.hora_entrega_real, p.fecha, me.precio as importe
@@ -220,26 +253,36 @@ class Pedido
                                                         INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
                                                         INNER JOIN empleado em ON em.ID_empleado = p.id_mozo
                                                         WHERE ep.descripcion = 'Cancelado'");
-        $consulta->execute();
-        
-        $resultado = $consulta->fetchAll(PDO::FETCH_CLASS,"Pedido");
-        return $resultado; 
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll(PDO::FETCH_CLASS, "Pedido");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
     }
 
-    public static function TomarPedido($id_pedido,$id_encargado,$tiempoEstimadoDePreparacion){
+    public static function TomarPedido($id_pedido, $id_encargado, $tiempoEstimadoDePreparacion)
+    {
 
     }
 
-    public static function InformarListoParaServir($id_encargado){
+    public static function InformarListoParaServir($id_encargado)
+    {
 
 
     }
 
-    public static function Servir($id_pedido){
+    public static function Servir($id_pedido)
+    {
 
     }
 
-    public static function tiempoRestante($id_pedido){
+    public static function tiempoRestante($id_pedido)
+    {
 
     }
 
