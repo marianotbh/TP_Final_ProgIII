@@ -114,11 +114,13 @@ $app->post('/pedido/servir[/]', \PedidoAPI::class . ':ServirPedido')
 ->add(\EmpleadoMiddleware::class . ':ValidarToken'); 
 $app->get('/pedido/tiempoRestante/{codigoPedido}[/]', \PedidoAPI::class . ':TiempoRestantePedido');
 
-
 //Encuesta
 $app->post('/encuesta/registrar[/]', \EncuestaAPI::class . ':RegistrarEncuesta')
 ->add(\EncuestaMiddleware::class . ':ValidarEncuesta'); 
 $app->get('/encuesta/listar[/]', \EncuestaAPI::class . ':ListarEncuestas');
 
+//Factura
+$app->get('/facturas/listarVentasPDF[/]', \FacturaAPI::class . ':ListarVentasPDF');
+$app->get('/facturas/listarVentasExcel[/]', \FacturaAPI::class . ':ListarVentasExcel');
 
 $app->run();
