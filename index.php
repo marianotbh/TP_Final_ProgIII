@@ -7,8 +7,12 @@ include_once './API/EmpleadoAPI.php';
 include_once './API/MesaAPI.php';
 include_once './API/MenuAPI.php';
 include_once './API/PedidoAPI.php';
+include_once './API/FacturaAPI.php';
+include_once './API/EncuestaAPI.php';
 include_once './Middleware/EmpleadoMiddleware.php';
 include_once './Middleware/PedidoMiddleware.php';
+include_once './Middleware/EncuestaMiddleware.php';
+include_once './Middleware/OperacionMiddleware.php';
 
 $app = new \Slim\App([
     'settings' => [
@@ -103,6 +107,10 @@ $app->post('/pedido/listoParaServir[/]', \PedidoAPI::class . ':InformarPedidoLis
 $app->get('/pedido/tiempoRestante/{codigoPedido}[/]', \PedidoAPI::class . ':TiempoRestantePedido');
 
 
+//Encuesta
+$app->post('/encuesta/registrar[/]', \EncuestaAPI::class . ':RegistrarEncuesta')
+->add(\EncuestaMiddleware::class . ':ValidarEncuesta'); 
+$app->get('/encuesta/listar[/]', \EncuestaAPI::class . ':ListarEncuestas');
 
 
 $app->run();

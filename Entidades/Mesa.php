@@ -49,6 +49,28 @@ class Mesa
         }
     }
 
+    ///Obtiene la mesa correspondiente al código
+    public static function ObtenerPorCodigo($codigoMesa)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT codigo_mesa as codigo, estado, foto FROM mesa
+                                                            WHERE codigo_mesa = :codigo");
+
+            $consulta->bindValue(':codigo', $codigoMesa, PDO::PARAM_STR);
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll(PDO::FETCH_CLASS, "Mesa");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
     ///Baja de mesas.
     public static function Baja($codigo)
     {
@@ -183,5 +205,26 @@ class Mesa
         }
     }
 
+    ///Calcula el importe final y genera la factura.
+    public static function Cobrar($codigoMesa)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE mesa SET estado = 'Cerrada' WHERE codigo_mesa = :codigo");
+
+            $consulta->bindValue(':codigo', $codigoMesa, PDO::PARAM_STR);
+
+            $consulta->execute();
+
+            $resultado = array("Estado" => "OK", "Mensaje" => "Cambio de estado exitoso.");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
 }
 ?>
