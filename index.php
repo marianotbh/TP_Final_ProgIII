@@ -45,7 +45,21 @@ $app->get('/mesas/listar[/]', \MesaAPI::class . ':ListarMesas')
 $app->delete('/mesas/{codigo}[/]', \MesaAPI::class . ':BajaMesa')
 ->add(\EmpleadoMiddleware::class . ':ValidarSocio')
 ->add(\EmpleadoMiddleware::class . ':ValidarToken'); 
-
+$app->post('/mesas/foto[/]', \MesaAPI::class . ':ActualizarFotoMesa')
+->add(\EmpleadoMiddleware::class . ':ValidarMozo')
+->add(\EmpleadoMiddleware::class . ':ValidarToken'); 
+$app->get('/mesas/estadoEsperando/{codigo}[/]', \MesaAPI::class . ':CambiarEstado_EsperandoPedido')
+->add(\EmpleadoMiddleware::class . ':ValidarMozo')
+->add(\EmpleadoMiddleware::class . ':ValidarToken');
+$app->get('/mesas/estadoComiendo/{codigo}[/]', \MesaAPI::class . ':CambiarEstado_Comiendo')
+->add(\EmpleadoMiddleware::class . ':ValidarMozo')
+->add(\EmpleadoMiddleware::class . ':ValidarToken'); 
+$app->get('/mesas/estadoPagando/{codigo}[/]', \MesaAPI::class . ':CambiarEstado_Pagando')
+->add(\EmpleadoMiddleware::class . ':ValidarMozo')
+->add(\EmpleadoMiddleware::class . ':ValidarToken'); 
+$app->get('/mesas/estadoCerrada/{codigo}[/]', \MesaAPI::class . ':CambiarEstado_Cerrada')
+->add(\EmpleadoMiddleware::class . ':ValidarSocio')
+->add(\EmpleadoMiddleware::class . ':ValidarToken'); 
 //Menu
 $app->post('/menu/registrar[/]', \MenuAPI::class . ':RegistrarComida')
 ->add(\EmpleadoMiddleware::class . ':ValidarSocio')

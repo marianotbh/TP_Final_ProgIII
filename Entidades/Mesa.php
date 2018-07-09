@@ -62,5 +62,70 @@ class Mesa
             return $respuesta;
         }
     }
+
+    ///Actualizar la foto de la mesa.
+    public static function ActualizarFoto($rutaFoto,$codigoMesa){
+        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+    
+        $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE mesa SET foto = :rutaFoto WHERE codigo_mesa = :codigo");
+
+        $consulta->bindValue(':codigo', $codigoMesa, PDO::PARAM_STR);
+        $consulta->bindValue(':rutaFoto', $rutaFoto, PDO::PARAM_STR);
+
+        $consulta->execute();
+    }
+
+    ///Cambio de estado: Con cliente esperando pedido
+    public static function EstadoEsperandoPedido($codigoMesa){
+        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+    
+        $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE mesa SET estado = 'Con cliente esperando pedido' WHERE codigo_mesa = :codigo");
+
+        $consulta->bindValue(':codigo', $codigoMesa, PDO::PARAM_STR);
+
+        $consulta->execute();
+
+        return array("Estado" => "OK", "Mensaje" => "Cambio de estado exitoso.");
+    }
+
+    ///Cambio de estado: Con clientes comiendo
+    public static function EstadoComiendo($codigoMesa){
+        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+    
+        $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE mesa SET estado = 'Con clientes comiendo' WHERE codigo_mesa = :codigo");
+
+        $consulta->bindValue(':codigo', $codigoMesa, PDO::PARAM_STR);
+
+        $consulta->execute();
+
+        return array("Estado" => "OK", "Mensaje" => "Cambio de estado exitoso.");
+    }
+
+    ///Cambio de estado: Con clientes pagando
+    public static function EstadoPagando($codigoMesa){
+        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+    
+        $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE mesa SET estado = 'Con clientes pagando' WHERE codigo_mesa = :codigo");
+
+        $consulta->bindValue(':codigo', $codigoMesa, PDO::PARAM_STR);
+
+        $consulta->execute();
+
+        return array("Estado" => "OK", "Mensaje" => "Cambio de estado exitoso.");
+    }
+
+    ///Cambio de estado: Cerrada
+    public static function EstadoCerrada($codigoMesa){
+        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+    
+        $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE mesa SET estado = 'Cerrada' WHERE codigo_mesa = :codigo");
+
+        $consulta->bindValue(':codigo', $codigoMesa, PDO::PARAM_STR);
+
+        $consulta->execute();
+
+        return array("Estado" => "OK", "Mensaje" => "Cambio de estado exitoso.");
+    }
+
 }
 ?>
