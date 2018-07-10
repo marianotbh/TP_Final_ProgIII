@@ -435,10 +435,79 @@ class Pedido
         }
     }
 
-    //MasVendido
+    ///Lo más vendido
+    public static function MasVendido()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
 
-    //MenosVendido
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.id_menu, m.nombre, count(p.id_menu) as cantidad_ventas FROM pedido p INNER JOIN menu m
+                                                            on m.id = p.id_menu GROUP BY(id_menu) HAVING count(p.id_menu) = 
+                                                            (SELECT MAX(sel.cantidad_ventas) FROM 
+                                                            (SELECT count(p.id_menu) as cantidad_ventas FROM pedido p GROUP BY(id_menu)) sel);");
 
-    //ListarFueraDelTiempoEstipulado
+            $consulta->execute();
+
+            $respuesta = $consulta->fetchAll();
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
+    ///Lo más vendido
+    public static function MenosVendido()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.id_menu, m.nombre, count(p.id_menu) as cantidad_ventas FROM pedido p INNER JOIN menu m
+                                                            on m.id = p.id_menu GROUP BY(id_menu) HAVING count(p.id_menu) = 
+                                                            (SELECT MIN(sel.cantidad_ventas) FROM 
+                                                            (SELECT count(p.id_menu) as cantidad_ventas FROM pedido p GROUP BY(id_menu)) sel);");
+
+            $consulta->execute();
+
+            $respuesta = $consulta->fetchAll();
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
+    //Lista los pedidos fuera del tiempo estipulado.
+    public static function ListarFueraDelTiempoEstipulado()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
+                                                        me.nombre as descripcion, p.id_menu, te.descripcion as sector, p.nombre_cliente,
+                                                        em.nombre_empleado as nombre_mozo, p.id_mozo, p.id_encargado, p.hora_inicial, p.hora_entrega_estimada,
+                                                        p.hora_entrega_real, p.fecha, me.precio as importe
+                                                        FROM pedido p
+                                                        INNER JOIN estado_pedidos ep ON ep.id_estado_pedidos = p.id_estado_pedidos
+                                                        INNER JOIN menu me ON me.id = p.id_menu
+                                                        INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
+                                                        INNER JOIN empleado em ON em.ID_empleado = p.id_mozo
+                                                        WHERE p.hora_entrega_estimada < p.hora_entrega_real");
+
+            $consulta->execute();
+
+            $respuesta = $consulta->fetchAll(PDO::FETCH_CLASS, "Pedido");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
 }
 ?>

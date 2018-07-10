@@ -102,4 +102,25 @@ class PedidoApi extends Pedido{
         $newResponse = $response->withJson($respuesta,200);
         return $newResponse;
     }
+
+    ///Lo menos vendido
+    public function LoMenosVendido($request,$response,$args){
+        $respuesta = Pedido::MenosVendido();
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
+
+    ///Lo más vendido
+    public function LoMasVendido($request,$response,$args){
+        $respuesta = Pedido::MasVendido();
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
+
+    //Lista los pedidos fuera del tiempo estipulado.
+    public function ListarPedidosFueraDelTiempoEstipulado($request,$response,$args){
+        $respuesta = Pedido::ListarFueraDelTiempoEstipulado();
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
 }

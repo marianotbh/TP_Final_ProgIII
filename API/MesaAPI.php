@@ -93,5 +93,70 @@ class MesaApi extends Mesa{
         return $newResponse;
     }
 
+    ///Mesa más usada.
+    public function MesaMasUsada($request,$response,$args){
+        $respuesta = Mesa::MasUsada();
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
 
+    ///Mesa menos usada.
+    public function MesaMenosUsada($request,$response,$args){
+        $respuesta = Mesa::MenosUsada();
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
+
+    ///Mesa que más facturó
+    public function MesaMasFacturacion($request,$response,$args){
+        $respuesta = Mesa::MasFacturacion();
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
+
+    ///Mesa que menos facturó
+    public function MesaMenosFacturacion($request,$response,$args){
+        $respuesta = Mesa::MenosFacturacion();
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
+
+    ///Mesa que tiene la factura con más importe
+    public function MesaConFacturaConMasImporte($request,$response,$args){
+        $respuesta = Mesa::ConFacturaConMasImporte();
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
+
+    ///Mesa que tiene la factura con menos importe
+    public function MesaConFacturaConMenosImporte($request,$response,$args){
+        $respuesta = Mesa::ConFacturaConMenosImporte();
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
+
+    ///Mesa que tiene la mejor puntuacion
+    public function MesaConMejorPuntuacion($request,$response,$args){
+        $respuesta = Mesa::ConMejorPuntuacion();
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
+
+    ///Mesa que tiene la peor puntuacion
+    public function MesaConPeorPuntuacion($request,$response,$args){
+        $respuesta = Mesa::ConPeorPuntuacion();
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
+
+    ///Facturacion entre 2 fechas para una mesa
+    public function MesaFacturacionEntreFechas($request,$response,$args){
+        $parametros = $request->getParsedBody();
+        $codigoMesa = $parametros["codigoMesa"];
+        $fecha1 = $parametros["fecha1"];
+        $fecha2 = $parametros["fecha2"];
+        $respuesta = Mesa::FacturacionEntreFechas($codigoMesa,$fecha1,$fecha2);
+        $newResponse = $response->withJson($respuesta,200);
+        return $newResponse;
+    }
 }

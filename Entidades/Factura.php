@@ -58,6 +58,28 @@ class Factura
         }
     }
 
+    ///Lista todas las facturas entre las fechas
+    public static function ListarEntreFechas($fecha1,$fecha2)
+    {
+        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+        $respuesta = "";
+        try {
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT idFactura, importe, codigoMesa, fecha 
+                                                            FROM factura WHERE fecha BETWEEN :fecha1 AND :fecha2;");
+            $consulta->bindValue(':fecha1', $fecha1, PDO::PARAM_STR);
+            $consulta->bindValue(':fecha2', $fecha2, PDO::PARAM_STR);
+            $consulta->execute();
+
+            $respuesta = $consulta->fetchAll(PDO::FETCH_CLASS, "Factura");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
     //Genera un pdf con la información de todas las facturas.
     public static function ListarPDF(){
         $pdf = new FPDF("P","mm","A4");

@@ -208,5 +208,123 @@ class Empleado
         }
     }
 
+    ///Sumar 1 operacion al empleado
+    public static function SumarOperacion($id_empleado)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+            $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE empleado 
+                                                            SET cantidad_operaciones = cantidad_operaciones + 1
+                                                            WHERE id_empleado = :id_empleado");
+
+            $consulta->bindValue(':id_empleado', $id_empleado, PDO::PARAM_INT);
+
+            $consulta->execute();
+
+            $respuesta = array("Estado" => "OK", "Mensaje" => "Operación sumada correctamente.");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
+    ///Cantidad de operaciones de todos por sector
+    public static function CantidadOperacionesPorSector()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT te.descripcion as sector, SUM(em.cantidad_operaciones) as cantidad_operaciones FROM empleado em
+                                                            INNER JOIN tipoempleado te on em.id_tipo_empleado = te.id_tipo_empleado
+                                                            GROUP BY(te.descripcion)");
+
+            $consulta->execute();
+
+            $respuesta = $consulta->fetchAll();
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
+    ///Cantidad de operaciones de todos por sector
+    public static function CantidadOperacionesEmpleadosPorSector($sector)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT te.descripcion as sector, em.nombre_empleado, em.id_empleado, 
+                                                            em.cantidad_operaciones as cantidad_operaciones FROM empleado em
+                                                            INNER JOIN tipoempleado te on em.id_tipo_empleado = te.id_tipo_empleado WHERE te.descripcion = :sector");
+
+            $consulta->bindValue(':sector', $sector, PDO::PARAM_STR);
+            $consulta->execute();
+
+            $respuesta = $consulta->fetchAll();
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
+    ///Listado completo de empleados entre fechas de login
+    public static function ListarEntreFechasLogin($fecha1,$fecha2)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT em.ID_empleado as id, te.Descripcion as tipo, em.nombre_empleado as nombre, 
+                                                        em.usuario, em.fecha_registro as fechaRegistro, em.fecha_ultimo_login as ultimoLogin, em.estado,
+                                                        em.cantidad_operaciones 
+                                                        FROM empleado em INNER JOIN tipoempleado te on em.id_tipo_empleado = te.id_tipo_empleado
+                                                        WHERE fecha_ultimo_login BETWEEN :fecha1 AND :fecha2");
+            $consulta->bindValue(':fecha1', $fecha1, PDO::PARAM_STR);
+            $consulta->bindValue(':fecha2', $fecha2, PDO::PARAM_STR);
+            $consulta->execute();
+
+            $respuesta = $consulta->fetchAll(PDO::FETCH_CLASS, "Empleado");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
+    ///Listado completo de empleados entre fechas de registro
+    public static function ListarEntreFechasRegistro($fecha1,$fecha2)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT em.ID_empleado as id, te.Descripcion as tipo, em.nombre_empleado as nombre, 
+                                                        em.usuario, em.fecha_registro as fechaRegistro, em.fecha_ultimo_login as ultimoLogin, em.estado,
+                                                        em.cantidad_operaciones 
+                                                        FROM empleado em INNER JOIN tipoempleado te on em.id_tipo_empleado = te.id_tipo_empleado
+                                                        WHERE fecha_registro BETWEEN :fecha1 AND :fecha2");
+            $consulta->bindValue(':fecha1', $fecha1, PDO::PARAM_STR);
+            $consulta->bindValue(':fecha2', $fecha2, PDO::PARAM_STR);
+            $consulta->execute();
+
+            $respuesta = $consulta->fetchAll(PDO::FETCH_CLASS, "Empleado");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
 }
 ?>

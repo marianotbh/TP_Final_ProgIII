@@ -67,6 +67,30 @@ class Encuesta
             return $respuesta;
         }
     }
+
+    ///Lista las encuestas entre las fechas
+    public static function ListarEntreFechas($fecha1,$fecha2)
+    {
+        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+        $respuesta = "";
+        try {
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT id, puntuacion_mesa, codigoMesa, puntuacion_restaurante,
+                                                            puntuacion_mozo,idMozo,puntuacion_cocinero,comentario,fecha FROM encuesta
+                                                            WHERE fecha BETWEEN :fecha1 AND :fecha2;");
+            
+            $consulta->bindValue(':fecha1', $fecha1, PDO::PARAM_STR);
+            $consulta->bindValue(':fecha2', $fecha2, PDO::PARAM_STR);
+            $consulta->execute();
+            
+            $respuesta = $consulta->fetchAll(PDO::FETCH_CLASS, "Encuesta");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
     
 }
 ?>

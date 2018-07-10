@@ -231,5 +231,212 @@ class Mesa
             return $resultado;
         }
     }
+
+    ///Mesa más usada
+    public static function MasUsada()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT f.codigoMesa, count(f.codigoMesa) as cantidad_usos FROM factura f 
+                                                            GROUP BY(f.codigoMesa) HAVING count(f.codigoMesa) = 
+                                                            (SELECT MAX(sel.cantidad_usos) FROM 
+                                                            (SELECT count(f2.codigoMesa) as cantidad_usos FROM factura f2 GROUP BY(f2.codigoMesa)) sel);");
+
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll();
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+    
+    ///Mesa más usada
+    public static function MenosUsada()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT f.codigoMesa, count(f.codigoMesa) as cantidad_usos FROM factura f 
+                                                            GROUP BY(f.codigoMesa) HAVING count(f.codigoMesa) = 
+                                                            (SELECT MIN(sel.cantidad_usos) FROM 
+                                                            (SELECT count(f2.codigoMesa) as cantidad_usos FROM factura f2 GROUP BY(f2.codigoMesa)) sel);");
+
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll();
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+    ///Mesa que más facturó
+    public static function MasFacturacion()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT f.codigoMesa, SUM(f.importe) as facturacion_total FROM factura f 
+                                                            GROUP BY(f.codigoMesa) HAVING SUM(f.importe) = 
+                                                            (SELECT MAX(sel.facturacion_total) FROM
+                                                            (SELECT SUM(f2.importe) as facturacion_total FROM factura f2 GROUP BY(f2.codigoMesa)) sel);");
+
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll();
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+    ///Mesa que menos facturó
+    public static function MenosFacturacion()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT f.codigoMesa, SUM(f.importe) as facturacion_total FROM factura f 
+                                                            GROUP BY(f.codigoMesa) HAVING SUM(f.importe) = 
+                                                            (SELECT MIN(sel.facturacion_total) FROM
+                                                            (SELECT SUM(f2.importe) as facturacion_total FROM factura f2 GROUP BY(f2.codigoMesa)) sel);");
+
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll();
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+    ///Mesa que tiene la factura con más importe
+    public static function ConFacturaConMasImporte()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT f.codigoMesa, f.importe as importe FROM factura f WHERE f.importe = 
+                                                            (SELECT MAX(f2.importe) as importe FROM factura f2 ) GROUP BY (f.codigoMesa);");
+
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll();
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+
+    ///Mesa que tiene la factura con menos importe
+    public static function ConFacturaConMenosImporte()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT f.codigoMesa, f.importe as importe FROM factura f WHERE f.importe = 
+                                                            (SELECT MIN(f2.importe) as importe FROM factura f2 ) GROUP BY (f.codigoMesa);");
+
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll();
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+    ///Mesa que tiene la mejor puntuacion
+    public static function ConMejorPuntuacion()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT f.codigoMesa, AVG(f.puntuacion_mesa) as puntuacion_promedio FROM encuesta f 
+                                                            GROUP BY(f.codigoMesa) HAVING AVG(f.puntuacion_mesa) = 
+                                                            (SELECT MAX(sel.puntuacion_promedio) FROM
+                                                            (SELECT AVG(f2.puntuacion_mesa) as puntuacion_promedio FROM encuesta f2 GROUP BY(f2.codigoMesa)) sel);");
+
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll();
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+    ///Mesa que tiene la peor puntuacion
+    public static function ConPeorPuntuacion()
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT f.codigoMesa, AVG(f.puntuacion_mesa) as puntuacion_promedio FROM encuesta f 
+                                                            GROUP BY(f.codigoMesa) HAVING AVG(f.puntuacion_mesa) = 
+                                                            (SELECT MIN(sel.puntuacion_promedio) FROM
+                                                            (SELECT AVG(f2.puntuacion_mesa) as puntuacion_promedio FROM encuesta f2 GROUP BY(f2.codigoMesa)) sel);");
+
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll();
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+
+    ///Facturacion entre 2 fechas para una mesa
+    public static function FacturacionEntreFechas($codigoMesa,$fecha1,$fecha2)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->RetornarConsulta("SELECT f.codigoMesa, f.fecha, f.importe FROM factura f 
+                                                            WHERE f.codigoMesa = :codigoMesa AND f.fecha BETWEEN :fecha1 AND :fecha2;");
+
+            $consulta->bindValue(':codigoMesa', $codigoMesa, PDO::PARAM_STR);
+            $consulta->bindValue(':fecha1', $fecha1, PDO::PARAM_STR);
+            $consulta->bindValue(':fecha2', $fecha2, PDO::PARAM_STR);
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll();
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
 }
 ?>
